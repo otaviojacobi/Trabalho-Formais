@@ -83,20 +83,30 @@ def separaGramatica(gramatica):
     O tratamento de erros é feito nas funções auxiliares
     '''
     terminais = achaTermin(gramatica)
-    #for terminal in terminais:
-    #    print terminal
     variaveis = achaVariav(gramatica)
-    #for var in variaveis:
-    #   print var
     inicial = achaInicial(gramatica, variaveis)
-    #print inicial
     regras = achaRegras(gramatica)
-    #for line in regras:
-    #    print line + " : "
-    #    for element in regras[line]:
-    #        print element
 
     return terminais, variaveis, inicial, regras
+
+def printStuff(printar, var):
+    '''
+    Lista de Strings OU string OU dicionario e um caracter informando o que printar
+    t-> imprime os terminais, v-> imprime as variaveis, g-> a gramatica sem comentarios
+    i-> o simbolo inicial, r-> o dicionário das regas
+    '''
+    if var=="t" or var=="v" or var=="g":
+        for elemento in printar:
+            print elemento
+    elif var=="i":
+        print printar
+    elif var=="r":
+        for line in regras.keys():
+            print line + ": "
+            for element in regras[line]:
+                print element
+    else:
+        print ("Parametro incorreto")
 
 def main():
 
@@ -111,8 +121,6 @@ def main():
         raise SystemExit, 1
 
     gramatica = retiraComments(gramatica)
-    #for line in gramatica:
-        #print line
     terminais, variaveis, inicial, regras = separaGramatica(gramatica)
 
 
