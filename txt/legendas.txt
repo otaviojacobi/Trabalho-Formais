@@ -1,1 +1,2 @@
-Essa pasta contém as legendas.txt utilizadas pra fazer a gramática
+Essa pasta contém as legendas.txt utilizadas pra fazer a gramática e
+o comando para gerar os .hist
