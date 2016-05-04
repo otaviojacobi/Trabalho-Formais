@@ -1,0 +1,1 @@
+tr '[A-Z]' '[a-z]' < thegodfather.txt | tr -sc '[a-z]' '[\012*]' | sort  | uniq -c |sort -nr > thegodfather.hist
