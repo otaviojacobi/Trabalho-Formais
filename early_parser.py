@@ -101,15 +101,15 @@ def printStuff(printar, var):
     elif var=="i":
         print printar
     elif var=="r":
-        for line in regras.keys():
+        for line in printar.keys():
             print line + ": "
-            for element in regras[line]:
+            for element in printar[line]:
                 print element
     else:
         print ("Parametro incorreto")
 
 def main():
-
+    '•'
     if(len(argv)!= 2):
         arquivo = raw_input("Digite o arquivo para ser usado como gramatica")
     else:
@@ -122,7 +122,7 @@ def main():
 
     gramatica = retiraComments(gramatica)
     terminais, variaveis, inicial, regras = separaGramatica(gramatica)
-
+    printStuff(regras, "r")
 
 if __name__ == '__main__':
     main()
