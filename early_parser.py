@@ -19,7 +19,7 @@ def achaTermin(lista_text):
     '''
     terminais=[]
     if lista_text[0]=="Terminais":
-        return lista_text[1].strip(" }{").split(" , ")
+        return lista_text[1].strip(" }{").replace(' ','').split(",")
 
     else:
         print ("Something went terrebly wrong...")
@@ -31,7 +31,7 @@ def achaVariav(lista_text):
     '''
     variaveis=[]
     if lista_text[2]=="Variaveis":
-        return  lista_text[3].strip(" }{").split(" , ")
+        return  lista_text[3].strip(" }{").replace(' ','').split(",")
     else:
         print ("Something went terrebly wrong...")
         return -1
@@ -71,7 +71,7 @@ def achaRegras(lista_text):
             except KeyError:
                 regras[esquerda]=[]
 
-            direita = direita.split(" , ")
+            direita = direita.replace(' ','').split(",")
             regras[esquerda].append(direita)
 
     return regras
@@ -111,7 +111,7 @@ def printStuff(printar, var):
 def main():
     '•'
     if(len(argv)!= 2):
-        arquivo = raw_input("Digite o arquivo para ser usado como gramatica")
+        arquivo = raw_input("Digite o arquivo para ser usado como gramatica: ")
     else:
         script, arquivo = argv
     try:
