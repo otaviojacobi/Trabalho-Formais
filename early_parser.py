@@ -108,6 +108,70 @@ def printStuff(printar, var):
     else:
         print ("Parametro incorreto")
 
+# ERRADO O D0 NÃO DEVE SER CRIADO ASSIM !!!!!!!
+# def criaD0(regras):
+#     '''
+#     Dicionario com as regras -> Dicionario com as regras iniciais (conjunto D0)
+#     '''
+#     for lista in regras.keys():
+#         for elemento in regras[lista]:
+#             elemento.insert(0, '@')
+#             elemento.append('/0')
+#
+#     return regras
+# ERRADO
+
+def movePontoColoca(lista_frase):
+    '''
+    Lista de Strings -> Lista De Strings
+    Recebe uma string equivalente a uma das linhas de uma das etapas de derivação
+    e move o ponto de marcação uma posição para a direita
+    '''
+    if '@' in lista_frase:
+        lista_frase='&'.join(lista_frase)
+        esquerda, ponto, direita =lista_frase.partition('@')
+
+        esquerda = esquerda.strip('&').split('&')
+        direita = direita.strip('&').split('&')
+
+
+        direita.insert(1,'@')
+
+        lista_frase = esquerda+direita
+
+        if lista_frase[0]=='':
+            lista_frase=lista_frase[1:]
+        if lista_frase[-2]=='':
+            save=lista_frase[-1]
+            lista_frase=lista_frase[0:-2]
+            lista_frase.append(save)
+    else:
+        lista_frase.insert(0, '@')
+
+    return lista_frase
+
+def aposPonto(lista_frase):
+    '''
+    Lista de Strings -> String
+    Retorna o elemento (variavel ou terminal) imediatamente após o ponto
+    '''
+
+    for elemento in range(len(lista_frase)):
+        if lista_frase[elemento]=='@' and elemento!=len(lista_frase)-1:
+            retorno = lista_frase[elemento+1]
+        elif elemento==len(lista_frase)-1:
+            retorno=None
+
+    if retorno==None:
+        print "NAO HA NADA APÓS O PONTO. Ver ERRO."
+
+    return retorno
+
+def criaDNdagram(string_pux, n):
+    '''
+    '''
+
+
 def main():
     '•'
     if(len(argv)!= 2):
@@ -121,8 +185,15 @@ def main():
         raise SystemExit, 1
 
     gramatica = retiraComments(gramatica)
+    #printstuff(gramatica, "g")
     terminais, variaveis, inicial, regras = separaGramatica(gramatica)
-    printStuff(regras, "r")
+    #printstuff(terminais, "t")
+    #printstuff(variaveis, "v")
+    #printStuff(inicial, "i")
+    #printStuff(regras, "r")
+    frase = raw_input("Digite a frase a ser parseada: ")
+    print aposPonto(movePontoColoca(frase.split(' ')))
+
 
 if __name__ == '__main__':
     main()
