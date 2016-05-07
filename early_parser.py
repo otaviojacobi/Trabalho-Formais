@@ -19,7 +19,7 @@ def achaTermin(lista_text):
     '''
     terminais=[]
     if lista_text[0]=="Terminais":
-        return lista_text[1].strip(" }{").replace(' ','').split(",")
+        return lista_text[1].strip(" }{;").replace(' ','').split(",")
 
     else:
         print ("Something went terrebly wrong...")
@@ -31,7 +31,7 @@ def achaVariav(lista_text):
     '''
     variaveis=[]
     if lista_text[2]=="Variaveis":
-        return  lista_text[3].strip(" }{").replace(' ','').split(",")
+        return  lista_text[3].strip(" }{;").replace(' ','').split(",")
     else:
         print ("Something went terrebly wrong...")
         return -1
@@ -41,9 +41,8 @@ def achaInicial(lista_text, variav):
     Lista de Strings -> String OU -1 para erro
     acha a variável inicial
     '''
-
     if lista_text[4]=="Inicial":
-        inicial = lista_text[5].strip(" }{")
+        inicial = lista_text[5].strip(" }{;")
         if inicial in variav:
             return inicial
         else:
@@ -58,11 +57,10 @@ def achaRegras(lista_text):
     Lista de Strings -> Hash OU -1 para erro
     Faz um hash (dicionario) associando o lado esquerdo ao direito da regra
     '''
-
     regras = {}
     if lista_text[6]=="Regras":
         for line in range(7, len(lista_text)):
-            lista = lista_text[line].strip(" }{")
+            lista = lista_text[line].strip(" }{;")
             linha = lista.partition(">")
             esquerda, direita = linha[0].strip(' '), linha[-1].strip(' ')
             try:
@@ -89,38 +87,6 @@ def separaGramatica(gramatica):
 
     return terminais, variaveis, inicial, regras
 
-def printStuff(printar, var):
-    '''
-    Lista de Strings OU string OU dicionario e um caracter informando o que printar
-    t-> imprime os terminais, v-> imprime as variaveis, g-> a gramatica sem comentarios
-    i-> o simbolo inicial, r-> o dicionário das regas
-    '''
-    if var=="t" or var=="v" or var=="g":
-        for elemento in printar:
-            print elemento
-    elif var=="i":
-        print printar
-    elif var=="r":
-        for line in printar.keys():
-            print line + ": "
-            for element in printar[line]:
-                print element
-    else:
-        print ("Parametro incorreto")
-
-# ERRADO O D0 NÃO DEVE SER CRIADO ASSIM !!!!!!!
-# def criaD0(regras):
-#     '''
-#     Dicionario com as regras -> Dicionario com as regras iniciais (conjunto D0)
-#     '''
-#     for lista in regras.keys():
-#         for elemento in regras[lista]:
-#             elemento.insert(0, '@')
-#             elemento.append('/0')
-#
-#     return regras
-# ERRADO
-
 def movePontoColoca(lista_frase):
     '''
     Lista de Strings -> Lista De Strings
@@ -146,6 +112,7 @@ def movePontoColoca(lista_frase):
             lista_frase=lista_frase[0:-2]
             lista_frase.append(save)
     else:
+        print "NAO TEM PONTO PROVAVEL ERRO"
         lista_frase.insert(0, '@')
 
     return lista_frase
@@ -155,22 +122,91 @@ def aposPonto(lista_frase):
     Lista de Strings -> String
     Retorna o elemento (variavel ou terminal) imediatamente após o ponto
     '''
+    if lista_frase[0]=='@':
+        return lista_frase[1]
+    else:
+        for elemento in range(len(lista_frase)):
+            if lista_frase[elemento]=='@' and elemento!=len(lista_frase)-1:
+                retorno = lista_frase[elemento+1]
+            else:
+                retorno=None
 
-    for elemento in range(len(lista_frase)):
-        if lista_frase[elemento]=='@' and elemento!=len(lista_frase)-1:
-            retorno = lista_frase[elemento+1]
-        elif elemento==len(lista_frase)-1:
-            retorno=None
+        if retorno==None:
+            print "NAO HA NADA APÓS O PONTO. Ver ERRO."
 
-    if retorno==None:
-        print "NAO HA NADA APÓS O PONTO. Ver ERRO."
-
-    return retorno
+        return retorno
 
 def criaDNdagram(string_pux, n):
     '''
+    Lista de Strings -> Lista de Strings
+    Retorna a lista com as strings com o ponto no inicio e '/n' no final
     '''
+    fim = '/'+str(n)
+    string_pux.insert(0,'@')
+    string_pux.append(fim)
 
+    return string_pux
+
+def printStuff(printar, var):
+    '''
+    Lista de Strings OU string OU dicionario e um caracter informando o que printar
+    t-> imprime os terminais, v-> imprime as variaveis, g-> a gramatica sem comentarios
+    i-> o simbolo inicial, r-> o dicionário das regas
+    '''
+    if var=="t" or var=="v" or var=="g":
+        for elemento in printar:
+            print elemento
+    elif var=="i":
+        print printar
+    elif var=="r":
+        for line in printar.keys():
+            print line + ": "
+            for element in printar[line]:
+                print element
+    else:
+        print ("Parametro incorreto")
+
+def criaD0(regras, inicial, terminais):
+    '''
+    Hash, String, Lista de Strings -> Hash
+    Função que inicializa o parsing criando o conjunto D0 a partir da gramática e siḿbolo inicial
+    Provaveis problemas: Se um terminal for igual a variavel (considerando caps), vai dar errado.
+    '''
+    D0 = {}
+    n_lista =[]
+    k=[]
+    flag = True
+    for lista in regras[inicial]:
+        n_lista.append(criaDNdagram(lista, 0))
+
+    D0[inicial]=n_lista
+
+    while(flag):
+        teste=k
+        save=n_lista
+        n_lista=[]
+        for lista2 in save:
+            if aposPonto(lista2) not in k:
+                k.append(aposPonto(lista2))
+
+        for elemento in teste:
+            D0[elemento]=[]
+            for lista in regras[elemento]:
+                lista=criaDNdagram(lista,0)
+                D0[elemento].append(lista)
+                if aposPonto(lista) not in k and aposPonto(lista) not in terminais:
+                    k.append(aposPonto(lista))
+        if teste==k:
+            flag=False
+
+    for chave in D0.keys():
+        nova_lista=[]
+        for lista in D0[chave]:
+            if lista not in nova_lista:
+                nova_lista.append(lista)
+        D0[chave]=nova_lista
+
+    return D0
 
 def main():
     '•'
@@ -192,8 +228,8 @@ def main():
     #printStuff(inicial, "i")
     #printStuff(regras, "r")
     frase = raw_input("Digite a frase a ser parseada: ")
-    print aposPonto(movePontoColoca(frase.split(' ')))
-
+    teste=criaD0(regras, inicial, terminais)
+    printStuff(teste,'r')
 
 if __name__ == '__main__':
     main()
