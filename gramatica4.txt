@@ -1,0 +1,21 @@
+Terminais
+{ papa, caviar, spoon, ate, with , the , a }
+Variaveis
+{ S , NP , VP , PP , N , V , P , Det }
+Inicial
+{ S }
+Regras
+{ S > NP, VP }
+{ NP > Det, N }
+{ NP > NP , PP }
+{ VP > V, NP }
+{ VP > VP, PP }
+{ PP > P, NP }
+{ NP > papa }
+{ N > caviar }
+{ N > spoon }
+{ V > spoon }
+{ V > ate }
+{ P > with }
+{ Det > the }
+{ Det > a }
