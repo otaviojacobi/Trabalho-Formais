@@ -87,7 +87,7 @@ def separaGramatica(gramatica):
 
     return terminais, variaveis, inicial, regras
 
-def movePontoColoca(lista_frase):
+def movePonto(lista_frase):
     '''
     Lista de Strings -> Lista De Strings
     Recebe uma string equivalente a uma das linhas de uma das etapas de derivação
@@ -166,6 +166,8 @@ def printStuff(printar, var):
     else:
         print ("Parametro incorreto")
 
+
+
 def criaD0(regras, inicial, terminais):
     '''
     Hash, String, Lista de Strings -> Hash
@@ -202,10 +204,56 @@ def criaD0(regras, inicial, terminais):
 
     return D0
 
-'''
-TANTANTAN
-def earley_parser():
-'''
+def magia(regras, D, palavra):
+
+
+    i=len(D)-1
+    found = False
+    while(i>=0 and not found):
+        for chaves in D[i].keys():
+            if chaves==palavra:
+
+
+
+def earley_parser(frase, inicial, terminais, regras, variaveis):
+
+    D=[]
+
+    D.append(criaD0(regras, inicial, terminais))
+
+    frase = frase.split(' ')
+
+    for elemento in range(1, len(frase)+1):
+        if frase[elemento-1] in terminais:
+            dr={}
+            i=elemento-1
+            found = False
+            while (i>=0 and not found):
+                for chaves in D[i].keys():
+                    lista_de_lista= D[i][chaves]
+                    for lista in lista_de_lista:
+                        if aposPonto(lista) == frase[elemento-1]:
+                            found = True
+                            lista = movePonto(lista)
+                            try:
+                                if dr[chaves] == None:
+                                    dr[chaves] = []
+                            except KeyError:
+                                dr[chaves]=[]
+                            dr[chaves].append(lista)          #AQUI ACHA A PALAVRA APOS PONTO EM D-
+            if found=False:
+                sys.exit("ALGUMA COISA DEU MT ERRADO")
+            else:
+                k=[]
+                for _chaves in dr.keys():
+                    for _lista_de_lista in dr[_chaves]:
+                        for _lista in _lista_de_lista:
+                            if aposPonto(_lista)[0]=='/':
+                                dr[_chvaes] += magia(regras, D, _chaves)
+                            elif aposPonto(_lista) in variaives:
+                                dr[_chaves] += magia(regras, D, aposPonto(_lista))
+    return dr
+
 def main():
     '•'
     if(len(argv)!= 2):
@@ -225,9 +273,12 @@ def main():
     #printstuff(variaveis, "v")
     #printStuff(inicial, "i")
     #printStuff(regras, "r")
-    frase = raw_input("Digite a frase a ser parseada: ")
-    teste=criaD0(regras, inicial, terminais)
-    printStuff(teste,'r')
+    #printStuff(criaD0(regras, inicial, terminais),'r')
+    frase = raw_input("Digite a frase a ser parsea: ")
+    d1= earley_parser(frase, inicial, terminais, regras)
+    printStuff(d1,'r')
+
+
 
 if __name__ == '__main__':
     main()
