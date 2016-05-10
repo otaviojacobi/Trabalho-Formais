@@ -193,21 +193,19 @@ def criaD0(regras, inicial, terminais):
             D0[elemento]=[]
             for lista in regras[elemento]:
                 lista=criaDNdagram(lista,0)
-                D0[elemento].append(lista)
+                if lista not in D0[elemento]:
+                    D0[elemento].append(lista)
                 if aposPonto(lista) not in k and aposPonto(lista) not in terminais:
                     k.append(aposPonto(lista))
         if teste==k:
             flag=False
 
-    for chave in D0.keys():
-        nova_lista=[]
-        for lista in D0[chave]:
-            if lista not in nova_lista:
-                nova_lista.append(lista)
-        D0[chave]=nova_lista
-
     return D0
 
+'''
+TANTANTAN
+def earley_parser():
+'''
 def main():
     '•'
     if(len(argv)!= 2):
