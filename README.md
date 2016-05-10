@@ -5,5 +5,5 @@ Esse trabalho consiste em 2 partes, a implementação de um Early Parser para a 
 e gere suas respectivas árvores de derivação e a implementação de um gerador de sentenças aleatórios
 que siga a gramática passada como parameto.
 
-Além disso, ao final do projeto, será desenvolvida uma Interface Gráfica para a utilização da sentença.
+Além disso, ao final do projeto, será desenvolvida uma Interface Gráfica para a criação da sentença.
 
