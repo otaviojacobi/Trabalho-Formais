@@ -7,9 +7,9 @@ Inicial
 Regras						
 { S > F , - , NO } 			#Gramatica toda aqui - Tema: O Poderoso Chefao
 { F > NP , VP }   			#Membros:
-{ NP > NP , PP }  			#Andressa Ruy - 232911	
-{ NP > DT , N }  			#Lucas Leal - 206438
-{ NP > P , VP }				#Otavio Jacobi - 261569
+{ NP > NP ,PP }  			#Andressa Ruy - 232911	
+{ NP > DT, N }  			#Lucas Leal - 206438
+{ NP > P,VP }				#Otavio Jacobi - 261569
 { VP > will , V }			#Victoria Alves - 261575
 { VP > will , not , V }
 { VP > would , V }
