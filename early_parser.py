@@ -136,8 +136,6 @@ def aposPonto(lista_frase):
             if lista_frase[elemento]=='@':
                 return lista_frase[elemento+1]
 
-
-
 def criaDNdagram(string_pux, n):
     '''
     Lista de Strings -> Lista de Strings
@@ -314,6 +312,20 @@ def ver_se_parsed(inicial, D):
                         return True            #somente assim aceita
     return False #senaõ, rejeita
 
+def save_D(D, arquivo):
+    for i in range(len(D)):
+        arquivo.write("D%d\n"%i)
+        for chave in D[i].keys():
+            for lista in D[i][chave]:
+                lista1=[]
+                for string in lista:
+                    if string=="@":
+                        string='•'
+                    lista1.append(string)
+                arquivo.write(chave+" > "+ ' '.join(lista1) + '\n')
+        arquivo.write('\n')
+    arquivo.close()
+
 def main():
     '•'
     if(len(argv)!= 2):
@@ -335,13 +347,17 @@ def main():
     pertence = ver_se_parsed(inicial, D)
 
     if pertence:
-        for i in range(len(D)):
-            print "\n"
-            print "D%d"%i
-            printStuff(D[i],'r')
+        #for i in range(len(D)):
+            #print "\n"
+            #print "D%d"%i
+            #printStuff(D[i],'r')
         print "A SENTENÇA PERTENCE A GRAMÁTICA !!!"
     else:
         print "A sentença não pertence a gramática !!!"
+
+    saida = open('saida.txt', 'w')
+    save_D(D, saida)
+
 
 
 if __name__ == '__main__':
