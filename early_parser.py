@@ -211,7 +211,7 @@ def criaD0(regras, inicial, terminais):
 
     return D0 #retorna o conjunto D[0] feito corretamente
 
-def insereDaAnterior(anterior, busca, atual):
+def insereDaAnterior(anterior, busca, atual, hist):
     '''
     Hash de Lista de Lista, String, Hash de Lista de Lista -> Hash de Lista de Lista
     Verifica todos os que tem o elemento buscado após o ponto em Danterior e insere em Datual
@@ -224,7 +224,20 @@ def insereDaAnterior(anterior, busca, atual):
                 except KeyError:
                     atual[chave]=[]                       #Caso a chave não existir, cria ela e
                     atual[chave].append(movePonto(lista)) #Insere a nova lista movendo o ponto um para a direita
+
+    hist[-1]=''.join(hist[-1])
+    historico = ''.join(hist)
+    #print historico
+    historico = '{' + historico + '}'
+    for chave in atual.keys():
+        for lista in atual[chave]:
+            #if
+            lista.append(historico)
     return atual #retorna o Datual atualizado
+def antesPonto(lista):
+    for i in range(len(lista)):
+        if lista[i]=='@' and i != 0:
+            return lista[i-1]
 
 def insereGram(gramatica, teste, elemento, dr):
     '''
@@ -288,7 +301,8 @@ def earley_parser(frase, inicial, terminais, regras, variaveis):
                                 n=int(teste[1])       #indentifica o n
                                 ja_visto = _chaves + str(n)  #lembrar que mesmo que já tenha NP por exemplo, se for NP /n(diferentes), ambos devem ser incluidos na contagem
                                 if ja_visto not in k_chaves: #por isso cria um "k_chaves" que verifica se aquela variavel já foi verificado naquele específico D
-                                    dr=insereDaAnterior(D[n], _chaves, dr) #insere as regras puxando do anterior
+                                    hist =[_chaves,'>',_lista]
+                                    dr=insereDaAnterior(D[n], _chaves, dr, hist) #insere as regras puxando do anterior
                                     k_chaves.append(_chaves+str(n))        #informa pra k_chaves que já leu _chaves(terminal) naqele Dn específico
 
                             elif teste in variaveis and teste not in k_terminais: #se for variavl após o ponto, CASO2 -> puxa da gramática com ponto no inicio e /n no fim
@@ -314,7 +328,7 @@ def ver_se_parsed(inicial, D):
 
 def save_D(D, arquivo):
     for i in range(len(D)):
-        arquivo.write("D%d\n"%i)
+        arquivo.write("D%d=\n"%i)
         for chave in D[i].keys():
             for lista in D[i][chave]:
                 lista1=[]
@@ -325,6 +339,20 @@ def save_D(D, arquivo):
                 arquivo.write(chave+" > "+ ' '.join(lista1) + '\n')
         arquivo.write('\n')
     arquivo.close()
+
+def exclui_brindes(D):
+    for i in range(1,len(D)):
+        for chave in D[i].keys():
+            for j in range(len(D[i][chave])):
+                lista_aux=[]
+                for string in D[i][chave][j]:
+                    if '{' not in string:
+                        lista_aux.append(string)
+                if D[i][chave][j][-1][0]!='/':
+                    lista_aux.append(D[i][chave][j][-1])
+                    D[i][chave][j]=lista_aux
+
+    return D
 
 def main():
     '•'
@@ -346,17 +374,22 @@ def main():
     D= earley_parser(frase, inicial, terminais, regras, variaveis)
     pertence = ver_se_parsed(inicial, D)
 
+
+    saida = open('saida.txt', 'w')
     if pertence:
         #for i in range(len(D)):
             #print "\n"
             #print "D%d"%i
             #printStuff(D[i],'r')
         print "A SENTENÇA PERTENCE A GRAMÁTICA !!!"
+        D=exclui_brindes(D)
+        save_D(D, saida)
+        print D[7]
     else:
         print "A sentença não pertence a gramática !!!"
+        saida.write("NAO PERTENCE!!!")
 
-    saida = open('saida.txt', 'w')
-    save_D(D, saida)
+
 
 
 
