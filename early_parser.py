@@ -216,28 +216,38 @@ def insereDaAnterior(anterior, busca, atual, hist):
     Hash de Lista de Lista, String, Hash de Lista de Lista -> Hash de Lista de Lista
     Verifica todos os que tem o elemento buscado após o ponto em Danterior e insere em Datual
     '''
+    save=[]
     for chave in anterior.keys():        #itera por todo o dicionário anterior
         for lista in anterior[chave]:    #itera por cada lista na lista de lista
-            if aposPonto(lista)==busca:  #se ao iterar por essas listas, encontrar o elemento após o ponto que seja igual ao buscado
+            depois = aposPonto(lista)
+            if depois==busca:  #se ao iterar por essas listas, encontrar o elemento após o ponto que seja igual ao buscado
                 try:
-                    atual[chave].append(movePonto(lista))  #Caso a chave já existir no dicionário adiciona a nova lista movendo o ponto um para a direita
+                    mover=movePonto(lista)
+                    atual[chave].append(mover)  #Caso a chave já existir no dicionário adiciona a nova lista movendo o ponto um para a direita
+                    save.append(chave+">"+''.join(mover))
                 except KeyError:
+                    mover=movePonto(lista)
                     atual[chave]=[]                       #Caso a chave não existir, cria ela e
-                    atual[chave].append(movePonto(lista)) #Insere a nova lista movendo o ponto um para a direita
+                    atual[chave].append(mover) #Insere a nova lista movendo o ponto um para a direita
+                    save.append(chave+">"+''.join(mover))
 
-    hist[-1]=''.join(hist[-1])
-    historico = ''.join(hist)
     #print historico
-    historico = '{' + historico + '}'
-    for chave in atual.keys():
-        for lista in atual[chave]:
-            #if
-            lista.append(historico)
+    historico='(' + hist + ')'
+    for novo_elemento in save:
+        chave = novo_elemento.partition('>')[0]
+        direita = novo_elemento.partition('>')[-1]
+        if chave in atual.keys():
+            for lista in atual[chave]:
+                if '(' in lista[-1]:
+                    elemento = lista.pop(-1)
+                    if direita not in elemento:
+                        elemento = '(' + elemento + historico + ')'
+                    lista.append(elemento)
+                else:
+                    lista.append(historico)
+
+
     return atual #retorna o Datual atualizado
-def antesPonto(lista):
-    for i in range(len(lista)):
-        if lista[i]=='@' and i != 0:
-            return lista[i-1]
 
 def insereGram(gramatica, teste, elemento, dr):
     '''
@@ -301,7 +311,7 @@ def earley_parser(frase, inicial, terminais, regras, variaveis):
                                 n=int(teste[1])       #indentifica o n
                                 ja_visto = _chaves + str(n)  #lembrar que mesmo que já tenha NP por exemplo, se for NP /n(diferentes), ambos devem ser incluidos na contagem
                                 if ja_visto not in k_chaves: #por isso cria um "k_chaves" que verifica se aquela variavel já foi verificado naquele específico D
-                                    hist =[_chaves,'>',_lista]
+                                    hist = _chaves +'>'+ ''.join(_lista)
                                     dr=insereDaAnterior(D[n], _chaves, dr, hist) #insere as regras puxando do anterior
                                     k_chaves.append(_chaves+str(n))        #informa pra k_chaves que já leu _chaves(terminal) naqele Dn específico
 
@@ -340,20 +350,6 @@ def save_D(D, arquivo):
         arquivo.write('\n')
     arquivo.close()
 
-def exclui_brindes(D):
-    for i in range(1,len(D)):
-        for chave in D[i].keys():
-            for j in range(len(D[i][chave])):
-                lista_aux=[]
-                for string in D[i][chave][j]:
-                    if '{' not in string:
-                        lista_aux.append(string)
-                if D[i][chave][j][-1][0]!='/':
-                    lista_aux.append(D[i][chave][j][-1])
-                    D[i][chave][j]=lista_aux
-
-    return D
-
 def main():
     '•'
     if(len(argv)!= 2):
@@ -382,9 +378,9 @@ def main():
             #print "D%d"%i
             #printStuff(D[i],'r')
         print "A SENTENÇA PERTENCE A GRAMÁTICA !!!"
-        D=exclui_brindes(D)
+        #D=exclui_brindes(D)
         save_D(D, saida)
-        print D[7]
+        #print D[7]
     else:
         print "A sentença não pertence a gramática !!!"
         saida.write("NAO PERTENCE!!!")

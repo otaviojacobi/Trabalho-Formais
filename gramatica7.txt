@@ -1,0 +1,13 @@
+Terminais
+{ the , boy , left }
+Variaveis
+{ NP , VP , S , Det , N , V }
+Inicial
+{ S }
+Regras
+{ S > NP , VP }
+{ NP > Det , N }
+{ VP > V } 
+{ Det > the }
+{ N > boy }
+{ V > left }

@@ -39,6 +39,7 @@ Regras
 { P > this }
 { P > your }
 { P > we }
+{ DT > your }
 { P > anything }
 { P > something }
 { P > questa }

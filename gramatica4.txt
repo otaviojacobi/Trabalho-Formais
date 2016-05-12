@@ -1,10 +1,10 @@
 Terminais
 { papa, caviar, spoon, ate, with , the , a }
 Variaveis
-{ S , NP , VP , PP , N , V , P , Det }
+{ S , NP , VP , PP , N , V , P , Det , ROOT }
 Inicial
 { S }
-Regras
+Regras #{ ROOT > S }
 { S > NP, VP }
 { NP > Det, N }
 { NP > NP , PP }
@@ -14,7 +14,6 @@ Regras
 { NP > papa }
 { N > caviar }
 { N > spoon }
-{ V > spoon }
 { V > ate }
 { P > with }
 { Det > the }
