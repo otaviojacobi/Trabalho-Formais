@@ -211,12 +211,19 @@ def criaD0(regras, inicial, terminais):
 
     return D0 #retorna o conjunto D[0] feito corretamente
 
-def insereDaAnterior(anterior, busca, atual, hist):
+def limpa(palavra):
+    palavra = palavra.replace('@', '').replace('/', '').replace('0','').replace('1','').replace('2','').replace('3','').replace('4','')
+    palavra = palavra.replace('5', '').replace('6', '').replace('7','').replace('8','')
+
+    return palavra
+
+def insereDaAnterior(anterior, busca, atual, hist, terminais, variaveis):
     '''
     Hash de Lista de Lista, String, Hash de Lista de Lista -> Hash de Lista de Lista
     Verifica todos os que tem o elemento buscado após o ponto em Danterior e insere em Datual
     '''
-    save=[]
+
+    #print hist
     historico = '(' + hist + ')'
     for chave in anterior.keys():        #itera por todo o dicionário anterior
         for lista in anterior[chave]:    #itera por cada lista na lista de lista
@@ -226,13 +233,11 @@ def insereDaAnterior(anterior, busca, atual, hist):
                     mover=movePonto(lista)
                     atual[chave].append(mover)  #Caso a chave já existir no dicionário adiciona a nova lista movendo o ponto um para a direita
                     atual[chave][-1].append(historico) #Appenda o historico na ultima chave gerada
-                    save.append(chave+">"+''.join(mover))
                 except KeyError:
                     mover=movePonto(lista)
                     atual[chave]=[]                       #Caso a chave não existir, cria ela e
                     atual[chave].append(mover) #Insere a nova lista movendo o ponto um para a direita
                     atual[chave][-1].append(historico)
-                    save.append(chave+">"+''.join(mover))
 
 
     return atual #retorna o Datual atualizado
@@ -300,7 +305,7 @@ def earley_parser(frase, inicial, terminais, regras, variaveis):
                                 ja_visto = _chaves + str(n)  #lembrar que mesmo que já tenha NP por exemplo, se for NP /n(diferentes), ambos devem ser incluidos na contagem
                                 if ja_visto not in k_chaves: #por isso cria um "k_chaves" que verifica se aquela variavel já foi verificado naquele específico D
                                     hist = _chaves +'>'+ ''.join(_lista)
-                                    dr=insereDaAnterior(D[n], _chaves, dr, hist) #insere as regras puxando do anterior
+                                    dr=insereDaAnterior(D[n], _chaves, dr, hist, terminais, variaveis) #insere as regras puxando do anterior
                                     k_chaves.append(_chaves+str(n))        #informa pra k_chaves que já leu _chaves(terminal) naqele Dn específico
 
                             elif teste in variaveis and teste not in k_terminais: #se for variavl após o ponto, CASO2 -> puxa da gramática com ponto no inicio e /n no fim
@@ -338,7 +343,25 @@ def ver_se_parsed(inicial, D):
                                 lista_aux.append(string)
                         arv_bonita= ' '.join(lista_aux).replace('@', '').replace('/', '').replace('0','').replace('1','').replace('2','').replace('3','').replace('4','').replace('5','')
                         arv_bonita = arv_bonita.replace('6','').replace('7','').replace('8','').replace('9','')
-                        print "A ARVORE DE DERIVACAO DEITADA EH: \n\n" + inicial + '>' + '(' + arv_bonita + ')\n\n'
+                        print "A ARVORE DE DERIVACAO DEITADA EH: \n\n" #+ inicial + '>' + '(' + arv_bonita + ')\n\n'
+                        arv_bonita = inicial + '>' + '(' + arv_bonita + ')'
+                        i=-1
+                        nova_string=''
+                        for char in arv_bonita:
+                        	if char == '(':
+                        		i+=1
+                        		nova_string+='\n'
+                        		for n in range(i):
+                        			nova_string+='\t'
+                        		nova_string+='('
+                        	elif char == ')':
+                        		i-=1
+                        		nova_string+=')'
+
+                        	else:
+                        		nova_string+=char
+
+                        print nova_string
                         return True            #somente assim aceita
     return False #senaõ, rejeita
 
@@ -387,8 +410,6 @@ def main():
     else:
         print "A sentença não pertence a gramática !!!"
         saida.write("NAO PERTENCE!!!")
-
-
 
 
 
