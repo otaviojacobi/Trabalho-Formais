@@ -338,7 +338,7 @@ def ver_se_parsed(inicial, D):
                                 lista_aux.append(string)
                         arv_bonita= ' '.join(lista_aux).replace('@', '').replace('/', '').replace('0','').replace('1','').replace('2','').replace('3','').replace('4','').replace('5','')
                         arv_bonita = arv_bonita.replace('6','').replace('7','').replace('8','').replace('9','')
-                        print "A ARVORE DE DERIVACAO DEITADA EH: \n\n" + arv_bonita + '\n\n'
+                        print "A ARVORE DE DERIVACAO DEITADA EH: \n\n" + inicial + '>' + '(' + arv_bonita + ')\n\n'
                         return True            #somente assim aceita
     return False #senaõ, rejeita
 
