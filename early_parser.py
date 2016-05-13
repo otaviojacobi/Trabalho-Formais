@@ -217,6 +217,7 @@ def insereDaAnterior(anterior, busca, atual, hist):
     Verifica todos os que tem o elemento buscado após o ponto em Danterior e insere em Datual
     '''
     save=[]
+    historico = '(' + hist + ')'
     for chave in anterior.keys():        #itera por todo o dicionário anterior
         for lista in anterior[chave]:    #itera por cada lista na lista de lista
             depois = aposPonto(lista)
@@ -224,27 +225,14 @@ def insereDaAnterior(anterior, busca, atual, hist):
                 try:
                     mover=movePonto(lista)
                     atual[chave].append(mover)  #Caso a chave já existir no dicionário adiciona a nova lista movendo o ponto um para a direita
+                    atual[chave][-1].append(historico) #Appenda o historico na ultima chave gerada
                     save.append(chave+">"+''.join(mover))
                 except KeyError:
                     mover=movePonto(lista)
                     atual[chave]=[]                       #Caso a chave não existir, cria ela e
                     atual[chave].append(mover) #Insere a nova lista movendo o ponto um para a direita
+                    atual[chave][-1].append(historico)
                     save.append(chave+">"+''.join(mover))
-
-    #print historico
-    historico='(' + hist + ')'
-    for novo_elemento in save:
-        chave = novo_elemento.partition('>')[0]
-        direita = novo_elemento.partition('>')[-1]
-        if chave in atual.keys():
-            for lista in atual[chave]:
-                if '(' in lista[-1]:
-                    elemento = lista.pop(-1)
-                    if direita not in elemento:
-                        elemento = '(' + elemento + historico + ')'
-                    lista.append(elemento)
-                else:
-                    lista.append(historico)
 
 
     return atual #retorna o Datual atualizado
