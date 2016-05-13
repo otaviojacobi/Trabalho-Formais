@@ -332,6 +332,13 @@ def ver_se_parsed(inicial, D):
             if chave==inicial:        #se achar uma regra que tenha o lado esquerdo como símbolo inicial
                 for lista in D[-1][chave]:
                     if aposPonto(lista)=='/0': #E tenha o ponto antes de um /0
+                        lista_aux=[]
+                        for string in lista:
+                            if '(' in string:
+                                lista_aux.append(string)
+                        arv_bonita= ' '.join(lista_aux).replace('@', '').replace('/', '').replace('0','').replace('1','').replace('2','').replace('3','').replace('4','').replace('5','')
+                        arv_bonita = arv_bonita.replace('6','').replace('7','').replace('8','').replace('9','')
+                        print "A ARVORE DE DERIVACAO DEITADA EH: \n\n" + arv_bonita + '\n\n'
                         return True            #somente assim aceita
     return False #senaõ, rejeita
 
@@ -366,20 +373,17 @@ def main():
     terminais, variaveis, inicial, regras = separaGramatica(gramatica)
 
     frase = raw_input("Digite a frase a ser parsea: ")
-    D= earley_parser(frase, inicial, terminais, regras, variaveis)
+    try:
+        D= earley_parser(frase, inicial, terminais, regras, variaveis)
+    except:
+        D=-1
     pertence = ver_se_parsed(inicial, D)
-
 
     saida = open('saida.txt', 'w')
     if pertence:
-        #for i in range(len(D)):
-            #print "\n"
-            #print "D%d"%i
-            #printStuff(D[i],'r')
         print "A SENTENÇA PERTENCE A GRAMÁTICA !!!"
         D=limpa_arvores(D)
         save_D(D, saida)
-        #print D[7]
     else:
         print "A sentença não pertence a gramática !!!"
         saida.write("NAO PERTENCE!!!")
