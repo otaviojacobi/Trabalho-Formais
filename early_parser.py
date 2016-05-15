@@ -1,6 +1,9 @@
 #-*- coding: utf-8 -*-
 from sys import *
 from copy import deepcopy
+from PIL import Image
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 
 def retiraComments(texto):
     '''
@@ -224,7 +227,7 @@ def insereDaAnterior(anterior, busca, atual, hist, terminais, variaveis):
     '''
 
     #print hist
-    historico = '(' + hist + ')'
+    historico = '[' + hist + ']'
     for chave in anterior.keys():        #itera por todo o dicionário anterior
         for lista in anterior[chave]:    #itera por cada lista na lista de lista
             depois = aposPonto(lista)
@@ -321,7 +324,7 @@ def limpa_arvores(D):
         for chave in dicionario.keys():
             for lista in dicionario[chave]:
                 for i in range(len(lista)):
-                    if '(' in lista[i]:
+                    if '[' in lista[i]:
                         lista[i] = lista[i].replace('@', '').replace('/', '').replace('0','').replace('1','').replace('2','').replace('3','').replace('4','')
                         lista[i] = lista[i].replace('5','').replace('6','').replace('7','').replace('8','').replace('9','')
 
@@ -332,6 +335,7 @@ def ver_se_parsed(inicial, D):
     String, Lista de Hash de Lista de Lista -> Bool
     Verifica se a sentença foi aceita ou rejeitada
     '''
+    arv_bonita=1
     if D!=-1:                         #caso D=-1, foi rejeita por não achar palavra inicial em Dn-1
         for chave in D[-1].keys():    #varre todo a última derivação
             if chave==inicial:        #se achar uma regra que tenha o lado esquerdo como símbolo inicial
@@ -339,31 +343,31 @@ def ver_se_parsed(inicial, D):
                     if aposPonto(lista)=='/0': #E tenha o ponto antes de um /0
                         lista_aux=[]
                         for string in lista:
-                            if '(' in string:
+                            if '[' in string:
                                 lista_aux.append(string)
                         arv_bonita= ' '.join(lista_aux).replace('@', '').replace('/', '').replace('0','').replace('1','').replace('2','').replace('3','').replace('4','').replace('5','')
                         arv_bonita = arv_bonita.replace('6','').replace('7','').replace('8','').replace('9','')
                         print "A ARVORE DE DERIVACAO DEITADA EH: \n\n" #+ inicial + '>' + '(' + arv_bonita + ')\n\n'
-                        arv_bonita = inicial + '>' + '(' + arv_bonita + ')'
+                        arv_bonita = '['  + inicial + '>' + arv_bonita + ']'
                         i=-1
                         nova_string=''
                         for char in arv_bonita:
-                        	if char == '(':
+                        	if char == '[':
                         		i+=1
                         		nova_string+='\n'
                         		for n in range(i):
                         			nova_string+='\t'
-                        		nova_string+='('
-                        	elif char == ')':
+                        		nova_string+='['
+                        	elif char == ']':
                         		i-=1
-                        		nova_string+=')'
+                        		nova_string+=']'
 
                         	else:
                         		nova_string+=char
 
                         print nova_string
-                        return True            #somente assim aceita
-    return False #senaõ, rejeita
+                        return True, arv_bonita            #somente assim aceita
+    return False, arv_bonita #senaõ, rejeita
 
 def save_D(D, arquivo):
     for i in range(len(D)):
@@ -395,18 +399,37 @@ def main():
 
     terminais, variaveis, inicial, regras = separaGramatica(gramatica)
 
+    #printStuff(regras,'r')
+
     frase = raw_input("Digite a frase a ser parsea: ")
     try:
         D= earley_parser(frase, inicial, terminais, regras, variaveis)
     except:
         D=-1
-    pertence = ver_se_parsed(inicial, D)
+    pertence, arv_bonita = ver_se_parsed(inicial, D)
 
     saida = open('saida.txt', 'w')
     if pertence:
         print "A SENTENÇA PERTENCE A GRAMÁTICA !!!"
         D=limpa_arvores(D)
         save_D(D, saida)
+
+        driver = webdriver.Chrome()
+        driver.get("http://mshang.ca/syntree/")
+
+        inputElement = driver.find_element_by_id("i")
+        inputElement.clear()
+        inputElement.send_keys(arv_bonita)
+
+        nome = "Derivation_Tree.png"
+
+        driver.save_screenshot(nome)
+        img = Image.open(nome)
+        img2 = img.crop((100, 250, 800, 750))
+        img2.save(nome)
+
+        driver.close()
+
     else:
         print "A sentença não pertence a gramática !!!"
         saida.write("NAO PERTENCE!!!")
