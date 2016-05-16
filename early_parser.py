@@ -4,6 +4,7 @@ from copy import deepcopy
 from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+import random
 
 def retiraComments(texto):
     '''
@@ -304,7 +305,12 @@ def earley_parser(frase, inicial, terminais, regras, variaveis):
                         for _lista in dr[_chaves]:    #passa em todas as listas individualmente
                             teste=aposPonto(_lista)   #teste recebe o que está após o ponto em cada lista
                             if teste[0]=='/':         #se for '/' após o ponto, CASO1 -> Puxa de n (onde /n) todas as regras que tem o lado esquerdo da regra atual após o ponto
-                                n=int(teste[1])       #indentifica o n
+                                laux=[]
+                                for char in teste:
+                                    if char!='/':
+                                        laux.append(char)
+                                n=''.join(laux)
+                                n=int(n)
                                 ja_visto = _chaves + str(n)  #lembrar que mesmo que já tenha NP por exemplo, se for NP /n(diferentes), ambos devem ser incluidos na contagem
                                 if ja_visto not in k_chaves: #por isso cria um "k_chaves" que verifica se aquela variavel já foi verificado naquele específico D
                                     hist = _chaves +'>'+ ''.join(_lista)
@@ -383,37 +389,7 @@ def save_D(D, arquivo):
         arquivo.write('\n')
     arquivo.close()
 
-def main():
-    '•'
-    if(len(argv)!= 2):
-        arquivo = raw_input("Digite o arquivo para ser usado como gramatica: ")
-    else:
-        script, arquivo = argv
-    try:
-        gramatica = open(arquivo, "r")
-    except IOError:
-        print ("Arquivo inexistente. Digite o nome de um arquivo existente.")
-        raise SystemExit, 1
-
-    gramatica = retiraComments(gramatica)
-
-    terminais, variaveis, inicial, regras = separaGramatica(gramatica)
-
-    #printStuff(regras,'r')
-
-    frase = raw_input("Digite a frase a ser parsea: ")
-    try:
-        D= earley_parser(frase, inicial, terminais, regras, variaveis)
-    except:
-        D=-1
-    pertence, arv_bonita = ver_se_parsed(inicial, D)
-
-    saida = open('saida.txt', 'w')
-    if pertence:
-        print "A SENTENÇA PERTENCE A GRAMÁTICA !!!"
-        D=limpa_arvores(D)
-        save_D(D, saida)
-
+def salva_arvore(arv_bonita):
         driver = webdriver.Chrome()
         driver.get("http://mshang.ca/syntree/")
 
@@ -430,10 +406,69 @@ def main():
 
         driver.close()
 
+def gera_frase(regras, inicial, variaveis, terminais):
+    flag = True
+    lista_de_exp =[]
+
+    inicio=regras[inicial][random.randint(0,len(regras[inicial])-1)]
+
+    while flag:
+        for string in inicio:
+            if string in variaveis:
+                lista_de_exp+=regras[string][random.randint(0,len(regras[string])-1)]
+            else:
+                lista_de_exp+=[string]
+
+        inicio=lista_de_exp
+
+        flag=False
+        for element in inicio:
+            if element in variaveis:
+                flag=True
+                lista_de_exp=[]
+
+    return ' '.join(lista_de_exp)
+
+def main():
+    '•'
+    if(len(argv)!= 2):
+        arquivo = raw_input("Digite o arquivo para ser usado como gramatica: ")
     else:
+        script, arquivo = argv
+    try:
+        gramatica = open(arquivo, "r")
+    except IOError:
+        print ("Arquivo inexistente. Digite o nome de um arquivo existente.")
+        raise SystemExit, 1
+
+    gramatica = retiraComments(gramatica)
+
+    terminais, variaveis, inicial, regras = separaGramatica(gramatica)
+
+    frase = raw_input("Digite a frase a ser parsea: ")
+    try:
+        D= earley_parser(frase, inicial, terminais, regras, variaveis)
+    except:
+        D=-1
+
+    pertence, arv_bonita = ver_se_parsed(inicial, D)
+
+    saida = open('saida.txt', 'w')
+    if pertence:
+        print "A SENTENÇA PERTENCE A GRAMÁTICA !!!"
+        D=limpa_arvores(D)
+        save_D(D, saida)
+        #salva_arvore(arv_bonita)
+
+    elif D!= -1:
         print "A sentença não pertence a gramática !!!"
+        save_D(D,saida)
+    else:
+        print "Algo talvez tenha dado errado(Verifique a sintaxe da gramatica)"
         saida.write("NAO PERTENCE!!!")
 
+    frase=gera_frase(regras, inicial, variaveis, terminais)
+    print frase
 
 
 if __name__ == '__main__':
