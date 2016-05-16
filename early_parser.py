@@ -225,6 +225,8 @@ def insereDaAnterior(anterior, busca, atual, hist, terminais, variaveis):
     '''
     Hash de Lista de Lista, String, Hash de Lista de Lista -> Hash de Lista de Lista
     Verifica todos os que tem o elemento buscado após o ponto em Danterior e insere em Datual
+    Esse eh o caso que busca no D anterior, logo, o caso em que adicionamos o caso, essa
+    função já insere o histórico corretamente
     '''
 
     #print hist
@@ -269,11 +271,8 @@ def earley_parser(frase, inicial, terminais, regras, variaveis):
     '''
     D=[]                                         #D é a lista que guarda cada derivação, D0 é acessado por D[0], D1 por D[1] e assim por diante
     D.append(criaD0(regras, inicial, terminais)) # Aqui cria o D[0]
-
     frase = frase.split(' ')                    #Separa a frase passada para gerar o DN respectivo a cada palavra
-
     save = deepcopy(regras)                     #Copia as regras em uma var auxiliar (uso a deepcopy pq se fizesse save=regras teria somente um ponteiro para o mesmo hash)
-
     for elemento in range(1, len(frase)+1):     #LOOP PRINCIAPL, CRIA D1 depois CRIA D2... até DN
         if frase[elemento-1] in terminais:      #se o elemento a ser parseado está no conjunto de terminais...
             k_chaves=[]                         #inicializa a lista dizendo quais variaveis já foram puxadas do Dn-1
@@ -292,8 +291,7 @@ def earley_parser(frase, inicial, terminais, regras, variaveis):
                         except KeyError:
                             dr[chaves]=[]                      #se ainda não existir a chave ainda nas regras, cria ele
                             dr[chaves].append(lista)           #e insere
-
-                                       #Aqui já inseriu em Dn todas as regras de da palavra pedida que existiam após ponto em Dn-1
+                                   #Aqui já inseriu em Dn todas as regras de da palavra pedida que existiam após ponto em Dn-1
             if found==False:       #senão achou nenhuma regra em Dn-1 que tinha a palavra pedida após o ponto, a sentença não pertence a gramática
                     D=-1
                     return D       #para a execução aqui mesmo
@@ -305,12 +303,12 @@ def earley_parser(frase, inicial, terminais, regras, variaveis):
                         for _lista in dr[_chaves]:    #passa em todas as listas individualmente
                             teste=aposPonto(_lista)   #teste recebe o que está após o ponto em cada lista
                             if teste[0]=='/':         #se for '/' após o ponto, CASO1 -> Puxa de n (onde /n) todas as regras que tem o lado esquerdo da regra atual após o ponto
-                                laux=[]
-                                for char in teste:
-                                    if char!='/':
-                                        laux.append(char)
-                                n=''.join(laux)
-                                n=int(n)
+                                laux=[]                      #cria lista auxiliar
+                                for char in teste:           #passa todos os elementos da string
+                                    if char!='/':            #Acha o numero apos a '/'
+                                        laux.append(char)    #coloca numa lista
+                                n=''.join(laux)              #passa de lista para string
+                                n=int(n)                     #passa de string para lista
                                 ja_visto = _chaves + str(n)  #lembrar que mesmo que já tenha NP por exemplo, se for NP /n(diferentes), ambos devem ser incluidos na contagem
                                 if ja_visto not in k_chaves: #por isso cria um "k_chaves" que verifica se aquela variavel já foi verificado naquele específico D
                                     hist = _chaves +'>'+ ''.join(_lista)
@@ -322,18 +320,36 @@ def earley_parser(frase, inicial, terminais, regras, variaveis):
                                 dr=insereGram(regras, teste, elemento, dr) #puxa da gramática os elementos que tem o lado esquerdo igual a variavel após o ponto
                                 k_terminais.append(teste)#informa que já leu esse terminal da gramática
             D.append(dr) #Após criar o Dn, insere ele na lista
-
     return D #retorna a lista de hashs
 
 def limpa_arvores(D):
+    '''
+    MELHORAR ESSA FUNCAO
+    '''
     for dicionario in D:
         for chave in dicionario.keys():
             for lista in dicionario[chave]:
                 for i in range(len(lista)):
                     if '[' in lista[i]:
+                        # for j in range(len(lista[i])):
+                        #     if lista[i][j] in '@/':
+                        #         lsita[i][j]=''
+                        #     elif lista[i][j] in '0123456789'
                         lista[i] = lista[i].replace('@', '').replace('/', '').replace('0','').replace('1','').replace('2','').replace('3','').replace('4','')
                         lista[i] = lista[i].replace('5','').replace('6','').replace('7','').replace('8','').replace('9','')
-
+                        nova=""
+                        for j in range(len(lista[i])):
+                            if lista[i][j]=='>':
+                                try:
+                                    if lista[i][j+1].islower():
+                                        nova+=' '
+                                    else:
+                                        nova+=lista[i][j]
+                                except IndexError:
+                                    nova+=lista[i][j]
+                            else:
+                                nova+=lista[i][j]
+                        lista[i]=nova
     return D
 
 def ver_se_parsed(inicial, D):
@@ -367,7 +383,6 @@ def ver_se_parsed(inicial, D):
                         	elif char == ']':
                         		i-=1
                         		nova_string+=']'
-
                         	else:
                         		nova_string+=char
 
@@ -376,6 +391,9 @@ def ver_se_parsed(inicial, D):
     return False, arv_bonita #senaõ, rejeita
 
 def save_D(D, arquivo):
+    '''
+    Salva a derivação em um arquivo .txt
+    '''
     for i in range(len(D)):
         arquivo.write("D%d=\n"%i)
         for chave in D[i].keys():
@@ -390,21 +408,24 @@ def save_D(D, arquivo):
     arquivo.close()
 
 def salva_arvore(arv_bonita):
-        driver = webdriver.Chrome()
-        driver.get("http://mshang.ca/syntree/")
+    '''
+    Acessa Web para printar a árvore e salva-la
+    '''
+    driver = webdriver.Chrome()
+    driver.get("http://mshang.ca/syntree/")
 
-        inputElement = driver.find_element_by_id("i")
-        inputElement.clear()
-        inputElement.send_keys(arv_bonita)
+    inputElement = driver.find_element_by_id("i")
+    inputElement.clear()
+    inputElement.send_keys(arv_bonita)
 
-        nome = "Derivation_Tree.png"
+    nome = "Derivation_Tree.png"
 
-        driver.save_screenshot(nome)
-        img = Image.open(nome)
-        img2 = img.crop((100, 250, 800, 750))
-        img2.save(nome)
+    driver.save_screenshot(nome)
+    img = Image.open(nome)
+    img2 = img.crop((100, 250, 800, 750))
+    img2.save(nome)
 
-        driver.close()
+    driver.close()
 
 def gera_frase(regras, inicial, variaveis, terminais):
     flag = True
@@ -451,14 +472,16 @@ def main():
     except:
         D=-1
 
+    if D!=-1:
+        D=limpa_arvores(D)
+        
     pertence, arv_bonita = ver_se_parsed(inicial, D)
 
     saida = open('saida.txt', 'w')
     if pertence:
         print "A SENTENÇA PERTENCE A GRAMÁTICA !!!"
-        D=limpa_arvores(D)
         save_D(D, saida)
-        #salva_arvore(arv_bonita)
+        salva_arvore(arv_bonita)
 
     elif D!= -1:
         print "A sentença não pertence a gramática !!!"
