@@ -5,6 +5,7 @@ from PIL import Image
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import random
+import re
 
 def retiraComments(texto):
     '''
@@ -303,12 +304,7 @@ def earley_parser(frase, inicial, terminais, regras, variaveis):
                         for _lista in dr[_chaves]:    #passa em todas as listas individualmente
                             teste=aposPonto(_lista)   #teste recebe o que está após o ponto em cada lista
                             if teste[0]=='/':         #se for '/' após o ponto, CASO1 -> Puxa de n (onde /n) todas as regras que tem o lado esquerdo da regra atual após o ponto
-                                laux=[]                      #cria lista auxiliar
-                                for char in teste:           #passa todos os elementos da string
-                                    if char!='/':            #Acha o numero apos a '/'
-                                        laux.append(char)    #coloca numa lista
-                                n=''.join(laux)              #passa de lista para string
-                                n=int(n)                     #passa de string para lista
+                                n=int(teste[1:])                    #passa de string para numero
                                 ja_visto = _chaves + str(n)  #lembrar que mesmo que já tenha NP por exemplo, se for NP /n(diferentes), ambos devem ser incluidos na contagem
                                 if ja_visto not in k_chaves: #por isso cria um "k_chaves" que verifica se aquela variavel já foi verificado naquele específico D
                                     hist = _chaves +'>'+ ''.join(_lista)
@@ -319,7 +315,7 @@ def earley_parser(frase, inicial, terminais, regras, variaveis):
                                 regras=deepcopy(save)  #resolve problemas que davam com a regra(stupid code),faz isso resetando a gramática para a inicial que ficou salva
                                 dr=insereGram(regras, teste, elemento, dr) #puxa da gramática os elementos que tem o lado esquerdo igual a variavel após o ponto
                                 k_terminais.append(teste)#informa que já leu esse terminal da gramática
-            D.append(dr) #Após criar o Dn, insere ele na lista
+            D.append(dr) #Após criar o Dn, insere na lista
     return D #retorna a lista de hashs
 
 def limpa_arvores(D):
@@ -331,24 +327,24 @@ def limpa_arvores(D):
             for lista in dicionario[chave]:
                 for i in range(len(lista)):
                     if '[' in lista[i]:
-                        # for j in range(len(lista[i])):
-                        #     if lista[i][j] in '@/':
-                        #         lsita[i][j]=''
-                        #     elif lista[i][j] in '0123456789'
-                        lista[i] = lista[i].replace('@', '').replace('/', '').replace('0','').replace('1','').replace('2','').replace('3','').replace('4','')
-                        lista[i] = lista[i].replace('5','').replace('6','').replace('7','').replace('8','').replace('9','')
+                        lista[i]=re.sub('@/[0-9]*', '', lista[i])
                         nova=""
                         for j in range(len(lista[i])):
                             if lista[i][j]=='>':
                                 try:
-                                    if lista[i][j+1].islower():
+                                    if lista[i][j+1].islower() or lista[i][j+1].isdigit():
                                         nova+=' '
-                                    else:
-                                        nova+=lista[i][j]
+                                    elif lista[i][j+1].isupper():
+                                        nova+='#'
+
                                 except IndexError:
                                     nova+=lista[i][j]
                             else:
                                 nova+=lista[i][j]
+
+                        nova=re.sub('#[A-Z]*?\[','#[',nova,flags=re.DOTALL)
+                        nova=nova.replace('>','').replace('#', '')
+
                         lista[i]=nova
     return D
 
@@ -367,10 +363,10 @@ def ver_se_parsed(inicial, D):
                         for string in lista:
                             if '[' in string:
                                 lista_aux.append(string)
-                        arv_bonita= ' '.join(lista_aux).replace('@', '').replace('/', '').replace('0','').replace('1','').replace('2','').replace('3','').replace('4','').replace('5','')
-                        arv_bonita = arv_bonita.replace('6','').replace('7','').replace('8','').replace('9','')
-                        print "A ARVORE DE DERIVACAO DEITADA EH: \n\n" #+ inicial + '>' + '(' + arv_bonita + ')\n\n'
-                        arv_bonita = '['  + inicial + '>' + arv_bonita + ']'
+                        arv_bonita= ' '.join(lista_aux)
+
+                        print "A ARVORE DE DERIVACAO DEITADA EH: " #+ inicial + '>' + '(' + arv_bonita + ')\n\n'
+                        arv_bonita = '['  + inicial + arv_bonita + ']'
                         i=-1
                         nova_string=''
                         for char in arv_bonita:
@@ -378,7 +374,7 @@ def ver_se_parsed(inicial, D):
                         		i+=1
                         		nova_string+='\n'
                         		for n in range(i):
-                        			nova_string+='\t'
+                        			nova_string+='   '
                         		nova_string+='['
                         	elif char == ']':
                         		i-=1
@@ -413,6 +409,7 @@ def salva_arvore(arv_bonita):
     '''
     driver = webdriver.Chrome()
     driver.get("http://mshang.ca/syntree/")
+    driver.maximize_window()
 
     inputElement = driver.find_element_by_id("i")
     inputElement.clear()
@@ -420,12 +417,22 @@ def salva_arvore(arv_bonita):
 
     nome = "Derivation_Tree.png"
 
+    outputElement = driver.find_element_by_id("image-goes-here")
+    location = outputElement.location
+    size = outputElement.size
     driver.save_screenshot(nome)
-    img = Image.open(nome)
-    img2 = img.crop((100, 250, 800, 750))
-    img2.save(nome)
 
     driver.close()
+
+    im = Image.open(nome)
+
+    left = int(location['x'])
+    top = int(location['y'])
+    right = int(location['x']) + int(size['width'])
+    bottom = int(location['y']) + int(size['height'])
+
+    im = im.crop((left, top, right, bottom))
+    im.save(nome)
 
 def gera_frase(regras, inicial, variaveis, terminais):
     flag = True
@@ -466,7 +473,27 @@ def main():
 
     terminais, variaveis, inicial, regras = separaGramatica(gramatica)
 
-    frase = raw_input("Digite a frase a ser parsea: ")
+    seletor=-2
+    while seletor!=1 and seletor!=2:
+        print "Digite 1 ou 2!"
+        print "<1>Para fazer o parser de uma sentenca."
+        print "<2>Para gerar uma sentenca aleatoria."
+
+        try:
+            seletor= int(raw_input("O que voce deseja fazer: "))
+        except:
+            print "Digite um numero!!!"
+            seletor=-2
+            pass
+
+        if seletor==1:
+            frase = raw_input("Digite a frase a ser parseada: ")
+        elif seletor==2:
+            frase=gera_frase(regras, inicial, variaveis, terminais)
+        elif seletor==-1:
+            exit("ADEUS")
+
+    #printStuff(regras, 'r')
     try:
         D= earley_parser(frase, inicial, terminais, regras, variaveis)
     except:
@@ -474,8 +501,10 @@ def main():
 
     if D!=-1:
         D=limpa_arvores(D)
-        
+
     pertence, arv_bonita = ver_se_parsed(inicial, D)
+
+    #dot=treeToDot(arv_bonita)
 
     saida = open('saida.txt', 'w')
     if pertence:
@@ -487,12 +516,11 @@ def main():
         print "A sentença não pertence a gramática !!!"
         save_D(D,saida)
     else:
-        print "Algo talvez tenha dado errado(Verifique a sintaxe da gramatica)"
+        print "Algo talvez tenha dado errado(Verifique a sintaxe da gramatica e se inseriu todas os terminais e variaveis no inicio)"
+        print "NAO PERTENCE A GRAMATICA !!!"
         saida.write("NAO PERTENCE!!!")
 
-    frase=gera_frase(regras, inicial, variaveis, terminais)
     print frase
-
 
 if __name__ == '__main__':
     main()
