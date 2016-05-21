@@ -6,6 +6,8 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import random
 import re
+from pyvirtualdisplay import Display
+
 
 def retiraComments(texto):
     '''
@@ -407,6 +409,8 @@ def salva_arvore(arv_bonita):
     '''
     Acessa Web para printar a árvore e salva-la
     '''
+    display = Display(visible=0, size=(800, 600))
+    display.start()
     driver = webdriver.Chrome()
     driver.get("http://mshang.ca/syntree/")
     driver.maximize_window()
@@ -446,9 +450,7 @@ def gera_frase(regras, inicial, variaveis, terminais):
                 lista_de_exp+=regras[string][random.randint(0,len(regras[string])-1)]
             else:
                 lista_de_exp+=[string]
-
         inicio=lista_de_exp
-
         flag=False
         for element in inicio:
             if element in variaveis:
