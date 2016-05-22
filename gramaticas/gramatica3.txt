@@ -1,0 +1,233 @@
+Terminais					
+{ i , you , that , he , she , - , them , my , me , him , her , they , this , your , we , anything , something , questa , the , a , to , it , in , of , on , and , for , with , but , business , offer , up , family , man , daughter , son , godfather , friend , police , father , don , mob , mafia , drink , wedding , blood , gun , drugs , dead , consigliere , car , brother , vendetta , work , money , america , wife , hospital , favor , children , trouble , vegas , sister , service , casino , narcotics , dollars , cops , wine , italy , vengeance , sicilian , permission , hotel , god , friendship , politicians , grandpa , contract , loyalty , lord , heroin , buongiorno , cracker , crime , cuba , daiquiri , death , enemy , fbi , fortune , lawyer , liver , major , mama , miami , molasses , oil , organization , partnership , perjury , poison , power , rebel , reputation , revenge , secret , senator , sevilla , sierra , soldiers , stuff , violence , witness , shoot , refuse , help , buy , like , take , believe , respect , gambling , judge , marry , murder , dies , be , have , do , can , want , go , get , come , are , will , going , make , tell, is , kill , know ,  played , risk , see , was , were , good , bad , unsafe , innocent , guilty , grateful , weak , sfortunato , finocchio , stronzo , pazzo , criminal , ilegal , italian , own , pezzonovante , rich , safety , michael , sonny , clemenza , tom , barzini , sollozzo , tessio , fredo , pauline , luca , could , should , would , not }	
+Variaveis				    	
+{ S , F , NP , DT , VP , CJ , PP , N , ADJ , P , V , NO }			  	
+Inicial					
+{ S }							
+Regras						
+{ S > F , - , NO } 			#Gramatica toda aqui - Tema: O Poderoso Chefao
+{ F > NP , VP }   			#Membros:
+{ NP > NP ,PP }  			#Andressa Ruy - 232911	
+{ NP > DT, N }  			#Lucas Leal - 206438
+{ NP > P,VP }				#Otavio Jacobi - 261569
+{ VP > will , V }			#Victoria Alves - 261575
+{ VP > will , not , V }
+{ VP > would , V }
+{ VP > would , not , V }
+{ VP > should , V }
+{ VP > should , not , V }
+{ VP > could , V }
+{ VP > could , not , V }
+{ VP > VP , PP }
+{ VP > VP , P }
+{ VP > V , NP } 
+{ VP > V , ADJ }		 		
+{ NP > NP , CJ , NP }			  	
+{ PP > PP , NP }
+{ P > i }
+{ P > you }
+{ P > it }
+{ P > that }
+{ P > he }
+{ P > she }
+{ P > them } 
+{ P > my }
+{ P > me }
+{ P > him }
+{ P > her } 
+{ P > they }
+{ P > this }
+{ P > your }
+{ P > we }
+{ DT > your }
+{ P > anything }
+{ P > something }
+{ P > questa }
+{ DT > the } 
+{ DT > a }
+{ PP > to } 
+{ PP > it }
+{ PP > in }
+{ PP > of }
+{ PP > on }
+{ PP > up }
+{ CJ > and }
+{ CJ > for }
+{ CJ > with }
+{ CJ > but }
+{ N > business }
+{ N > offer }
+{ N > up }
+{ N > family }
+{ N > man }
+{ N > daughter }
+{ N > son }
+{ N > godfather }
+{ N > friend }
+{ N > police }
+{ N > father }
+{ N > don }
+{ N > mob }
+{ N > mafia }
+{ N > drink }
+{ N > wedding }
+{ N > blood }
+{ N > gun }
+{ N > drugs }
+{ N > dead }
+{ N > consigliere }
+{ N > car }
+{ N > brother }
+{ N > vendetta }	
+{ N > work }
+{ N > money }
+{ N > america }
+{ N > wife }
+{ N > hospital }
+{ N > favor }
+{ N > help } 
+{ N > respect }
+{ N > children }
+{ N > trouble }
+{ N > vegas } 
+{ N > sister }
+{ N > service } 
+{ N > casino }
+{ N > narcotics } 
+{ N > dollars } 
+{ N > cops }
+{ N > wine } 
+{ N > italy } 
+{ N > vengeance }  
+{ N > sicilian } 
+{ N > permission } 
+{ N > hotel } 
+{ N > god }
+{ N > friendship }
+{ N > politicians } 
+{ N > grandpa } 
+{ N > contract } 
+{ N > loyalty }
+{ N > lord } 
+{ N > heroin }
+{ N > buongiorno }
+{ N > cracker }
+{ N > crime }
+{ N > criminal }
+{ N > cuba }
+{ N > daiquiri }
+{ N > death }
+{ N > enemy }
+{ N > fbi }
+{ N > fortune }
+{ N > lawyer }
+{ N > liver }
+{ N > major }
+{ N > mama }
+{ N > miami }
+{ N > molasses }
+{ N > oil }
+{ N > organization }
+{ N > partnership }
+{ N > perjury }
+{ N > poison }
+{ N > power }
+{ N > rebel }
+{ N > reputation }
+{ N > revenge }
+{ N > risk }
+{ N > secret }
+{ N > senator }
+{ N > sevilla }
+{ N > sierra }
+{ N > soldiers }
+{ N > stuff }
+{ N > violence }
+{ N > witness }
+{ N > help }
+{ N > judge }
+{ N > murder }
+{ N > will }
+{ N > italian }
+{ N > michael }
+{ N > sonny }
+{ N > clemenza }
+{ N > tom }
+{ N > barzini }
+{ N > sollozzo }
+{ N > tessio }
+{ N > fredo }
+{ N > paulie }
+{ N > luca }
+{ V > shoot }
+{ V > refuse }  
+{ V > help } 
+{ V > buy }
+{ V > like }
+{ V > offer } 
+{ V > take } 
+{ V > believe }
+{ V > respect }
+{ V > gambling }
+{ V > judge }
+{ V > marry }
+{ V > murder } 
+{ V > dies } 
+{ V > be }
+{ V > have } 
+{ V > do }
+{ V > can }
+{ V > want }
+{ V > go }
+{ V > get }
+{ V > come }
+{ V > are }
+{ V > will }
+{ V > going }
+{ V > make }
+{ V > tell }
+{ V > is }
+{ V > kill }
+{ V > know }
+{ V > own }
+{ V > played }
+{ V > risk }
+{ V > see }
+{ V > was }
+{ V > were }
+{ V > witness }
+{ V > poison }
+{ V > respect }
+{ V > work }
+{ ADJ > good }
+{ ADJ > bad }
+{ ADJ > unsafe }
+{ ADJ > innocent }
+{ ADJ > guilty } 
+{ ADJ > grateful } 
+{ ADJ > italian } 
+{ ADJ > weak }
+{ ADJ > sfortunato }
+{ ADJ > finocchio }
+{ ADJ > stronzo }
+{ ADJ > pazzo }
+{ ADJ > criminal }
+{ ADJ > ilegal }
+{ ADJ > italian }
+{ ADJ > own }
+{ ADJ > pezzonovante }
+{ ADJ > rebel }
+{ ADJ > rich }
+{ ADJ > safety }
+{ ADJ > secret }
+{ NO > don }
+{ NO > michael }
+{ NO > sonny }
+{ NO > clemenza }
+{ NO > tom }
+{ NO > barzini }
+{ NO > sollozzo }
+{ NO > tessio }
+{ NO > fredo }
+{ NO > paulie }
+{ NO > luca }

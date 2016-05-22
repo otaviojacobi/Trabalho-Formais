@@ -1,0 +1,23 @@
+Terminais
+{ the , girl , saw , man , park , telescope , in , with }
+Variaveis
+{ S , NP , VP , Det , N , PP , VI , P , VT }
+Inicial
+{ S }
+Regras
+{ S > NP , VP }
+{ NP > Det , N }	
+{ NP > NP , PP }
+{ Det > the }
+{ N > girl }
+{ N > man }
+{ N > park }
+{ N > telescope }
+{ VP > VT , NP }
+{ VP > VP , PP }
+{ VP > VI }
+{ PP > P , NP }
+{ VI > saw }
+{ VT > saw }
+{ P > with }
+{ P > in }

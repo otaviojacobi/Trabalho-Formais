@@ -1,0 +1,16 @@
+Terminais
+{ 1, 2 , 3, 4 , +, * }
+Variaveis
+{ P , S , M , T }
+Inicial
+{ P }
+Regras
+{ P > S }
+{ S > S, + , M }
+{ S > M }
+{ M > M, *, T }
+{ M > T }
+{ T > 1 }
+{ T > 2 }
+{ T > 3 }
+{ T > 4 }
