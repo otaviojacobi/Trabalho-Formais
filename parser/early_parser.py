@@ -8,7 +8,6 @@ import random
 import re
 from pyvirtualdisplay import Display
 
-
 def retiraComments(texto):
     '''
     String -> Lista de Strings
@@ -367,7 +366,7 @@ def ver_se_parsed(inicial, D):
                                 lista_aux.append(string)
                         arv_bonita= ' '.join(lista_aux)
 
-                        print "A ARVORE DE DERIVACAO DEITADA EH: " #+ inicial + '>' + '(' + arv_bonita + ')\n\n'
+                        #print "A ARVORE DE DERIVACAO DEITADA EH: " #+ inicial + '>' + '(' + arv_bonita + ')\n\n'
                         arv_bonita = '['  + inicial + arv_bonita + ']'
                         i=-1
                         nova_string=''
@@ -384,7 +383,7 @@ def ver_se_parsed(inicial, D):
                         	else:
                         		nova_string+=char
 
-                        print nova_string
+                        #print nova_string
                         return True, arv_bonita            #somente assim aceita
     return False, arv_bonita #senaõ, rejeita
 
@@ -411,7 +410,7 @@ def salva_arvore(arv_bonita):
     '''
     display = Display(visible=0, size=(800, 600))
     display.start()
-    driver = webdriver.Chrome()
+    driver = webdriver.Firefox()
     driver.get("http://mshang.ca/syntree/")
     driver.maximize_window()
 
@@ -459,43 +458,7 @@ def gera_frase(regras, inicial, variaveis, terminais):
 
     return ' '.join(lista_de_exp)
 
-def main():
-    '•'
-    if(len(argv)!= 2):
-        arquivo = raw_input("Digite o arquivo para ser usado como gramatica: ")
-    else:
-        script, arquivo = argv
-    try:
-        gramatica = open(arquivo, "r")
-    except IOError:
-        print ("Arquivo inexistente. Digite o nome de um arquivo existente.")
-        raise SystemExit, 1
-
-    gramatica = retiraComments(gramatica)
-
-    terminais, variaveis, inicial, regras = separaGramatica(gramatica)
-
-    seletor=-2
-    while seletor!=1 and seletor!=2:
-        print "Digite 1 ou 2!"
-        print "<1>Para fazer o parser de uma sentenca."
-        print "<2>Para gerar uma sentenca aleatoria."
-
-        try:
-            seletor= int(raw_input("O que voce deseja fazer: "))
-        except:
-            print "Digite um numero!!!"
-            seletor=-2
-            pass
-
-        if seletor==1:
-            frase = raw_input("Digite a frase a ser parseada: ")
-        elif seletor==2:
-            frase=gera_frase(regras, inicial, variaveis, terminais)
-        elif seletor==-1:
-            exit("ADEUS")
-
-    #printStuff(regras, 'r')
+def parse(frase, inicial, terminais, regras, variaveis):
     try:
         D= earley_parser(frase, inicial, terminais, regras, variaveis)
     except:
@@ -506,23 +469,4 @@ def main():
 
     pertence, arv_bonita = ver_se_parsed(inicial, D)
 
-    #dot=treeToDot(arv_bonita)
-
-    saida = open('saida.txt', 'w')
-    if pertence:
-        print "A SENTENÇA PERTENCE A GRAMÁTICA !!!"
-        save_D(D, saida)
-        salva_arvore(arv_bonita)
-
-    elif D!= -1:
-        print "A sentença não pertence a gramática !!!"
-        save_D(D,saida)
-    else:
-        print "Algo talvez tenha dado errado(Verifique a sintaxe da gramatica e se inseriu todas os terminais e variaveis no inicio)"
-        print "NAO PERTENCE A GRAMATICA !!!"
-        saida.write("NAO PERTENCE!!!")
-
-    print frase
-
-if __name__ == '__main__':
-    main()
+    return pertence, D, arv_bonita
